@@ -7,35 +7,21 @@ const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 let result =
 
-/* GET users listing. */
+/* GET parsed text */
 router.get('/', function(req, res, next) {
-
-  // And insert something like this instead:
-  res.json([{
-    id: 1,
-    username: "Hi"
-  }, {
-    id: 2,
-    username: "Sam"
-  },{
-    id: 3,
-    username: "Stephen"
-  }, {
-    id: 4,
-    username: "Bill"
-  }]);
+  res.json({parsedtext: result})
 });
 
+// POST image to google vision
 router.post('/', function(req, res, next) {
-
-  var imagelink = req.body.url
-  console.log(imagelink)
+  const imagelink = req.body.url;
+  console.log(imagelink);
   client
   .documentTextDetection(imagelink)
   .then(results => {
     const fullTextAnnotation = results[0].fullTextAnnotation;
     result = fullTextAnnotation.text
-    console.log(result);
+    console.log(result)
   })
   .catch(err => {
     console.error('ERROR:', err);
