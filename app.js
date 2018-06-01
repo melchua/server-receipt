@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var receiptsRouter = require('./routes/receipts');
 
 var app = express();
 
@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/receipts', usersRouter);
+app.use('/receipts', receiptsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

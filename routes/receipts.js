@@ -22,7 +22,7 @@ router.get('/', function(req, res, next) {
 		location: "Mcdonalds",
 		total: 22.00,
 		created_at: "March 29 2018",
-		user: "Sam",
+		user: "Bob",
 		image_url: "http://www.catster.com/wp-content/uploads/2017/08/A-fluffy-cat-looking-funny-surprised-or-concerned.jpg",
 		category_id: "food",
 		status: "Approve",
