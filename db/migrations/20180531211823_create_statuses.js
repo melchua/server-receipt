@@ -1,7 +1,7 @@
 
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('statuses', function(t) {
-        t.integer('id').unsigned().primary();
+        t.increments('id').primary();
         t.string('name');
     });
 };
