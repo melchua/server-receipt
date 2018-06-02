@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.18.3",
     "debug": "~2.6.9",
     "dotenv": "^2.0.0",
     "ejs": "^2.6.1",
