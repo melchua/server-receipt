@@ -3,9 +3,9 @@ var express = require('express');
 var path = require('path');
 const bodyParser = require('body-parser')
 var logger = require('morgan');
-var config      = require('./knexfile.js');  
-var env         = 'development';  
-var knex        = require('knex')(config[env]);
+var config = require('./knexfile.js');  
+var env = 'development';  
+var knex = require('knex')(config[env]);
 
 var indexRouter = require('./routes/index');
 var receiptsRouter = require('./routes/receipts');
