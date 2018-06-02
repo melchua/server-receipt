@@ -12,6 +12,14 @@ var receiptsRouter = require('./routes/receipts');
 var imagesRouter = require('./routes/images');
 
 var app = express();
+app.use(bodyParser.urlencoded({
+  extended:true,
+  limit: 4000000000
+}))
+
+app.use(bodyParser.json({
+  limit: "10mb"
+}))
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
