@@ -1,0 +1,8 @@
+{
+    "user": "bsms",
+    "password": "bsms",
+    "database": "final",
+    "hostname": "localhost",
+    "port": 5432,
+    "ssl": true
+  }
