@@ -10,7 +10,7 @@ var uuid = require('node-uuid')
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
-function googleVision(image){
+function googleVision(image, id, first_name, last_name, email){
 
   return client
     .documentTextDetection(image)
@@ -30,18 +30,22 @@ function googleVision(image){
       let date = datefound[0]
 
       let priceresult = pricefound.map(function(price){
+       // price.replace("$", "") this is a better way of doing it
         if (price[0] === "$") {
           price = price.slice(1)
         }
         return parseFloat(price)
       })
-
       let biggest = Math.max(...priceresult);
       console.log("TOTAL:" + biggest)
       console.log("PURCHASED DATE:" + date)
       var results ={
         "total": biggest,
-        "date": date
+        "date": date,
+        "id": id,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email
       }
       console.log("what i am sending to phone", results)
       return results
@@ -55,10 +59,14 @@ function googleVision(image){
   var photoPath = 'tmp/' + photoname + '.png'
   fs.writeFile(photoPath, buf, (err)=>{
     if(err) throw err;
-    googleVision(photoPath)
-      .then((result) => res.json(result))
-      .catch(next);
+    database.returningUsers(req.body.id)
+    .then((result) => 
+      googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
+        .then((result) => res.json(result))
+        .catch(next)
+    );
   })
+  
   
 });
 console.log(process.cwd())

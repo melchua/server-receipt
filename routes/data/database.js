@@ -2,14 +2,14 @@ const pg = require("pg");
 const settings = require("./settings");
 
 const knex = require('knex')({
-    client: 'pg',
-    version: '7.2',
-    connection: {
+  client: 'pg',
+  version: '7.2',
+  connection: {
     user     : settings.user,
     password : settings.password,
     database : settings.database,
     host     : settings.hostname,
-    }
+  }
   });
  
   const returningReceipts = () => {
@@ -26,4 +26,10 @@ const knex = require('knex')({
       inner join projects p on p.id = r.project_id;`)
 
   }
-  exports.returningReceipts = returningReceipts
+
+  const returningUsers = (userId) => {
+    return knex('users').where('id', userId)
+  }
+
+  exports.returningReceipts = returningReceipts;
+  exports.returningUsers = returningUsers;
