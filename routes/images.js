@@ -1,194 +1,73 @@
-import { Constants, Camera, FileSystem, Permissions, ImageManipulator } from 'expo';
-import React from 'react';
-import Modal from 'react-native-modal';
-import {
- Alert,
- StyleSheet,
- Text,
- View,
- TouchableOpacity,
- Slider,
- Platform,
- Image
-} from 'react-native';
+const database = require("./data/database");
+var express = require('express')
+var router = express.Router();
+var bodyParser = require('body-parser')
+var app = express()
+var fs = require("fs")
+var uuid = require('node-uuid')
 
-import {
- Ionicons,
- MaterialIcons,
- Foundation,
- MaterialCommunityIcons,
- Octicons
-} from '@expo/vector-icons';
+//Google vision
+const vision = require('@google-cloud/vision');
+const client = new vision.ImageAnnotatorClient();
 
-import { Button } from 'react-native-elements';
-import Icon from 'react-native-vector-icons/FontAwesome';
+function googleVision(image, id, first_name, last_name, email){
 
-const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
-
-class PhotoPreview extends React.Component {
-  constructor(props){
-    super(props),
-    this.state = {
-      image: "hello",
-      visibleModal: null
-    }
-    this.uploadPicture = this.uploadPicture.bind(this)
-  }
-  resizePicture = async() =>{
-    const manipResult = await ImageManipulator.manipulate(
-      this.props.navigation.getParam('uri', 'defaultvalue'),
-      [{resize:{width:800}}],{format: 'png', base64:true}
-    )
-      this.setState({
-      image: manipResult
+  return client
+    .documentTextDetection(image)
+    .then(results => {
+      const fullTextAnnotation = results[0].fullTextAnnotation;
+      return ocrCheck(fullTextAnnotation.text);
     })
-    console.log("right before upload picture");
-    this.uploadPicture();
-  }
 
-  uploadPicture = () => {
-    fetch('http://10.30.31.122:8080/images', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    body: JSON.stringify({
-        id: "2",
-        photo: this.state.image
+    function ocrCheck(ocrresult) {
+      let string = ocrresult
+
+      const pricereg = /^[$0-9]+(\.[0-9]{2})$/gm
+      const datereg = /((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))/gm
+
+      let pricefound = string.match(pricereg)
+      let datefound = string.match(datereg)
+      let date = datefound[0]
+
+      let priceresult = pricefound.map(function(price){
+       // price.replace("$", "") this is a better way of doing it
+        if (price[0] === "$") {
+          price = price.slice(1)
+        }
+        return parseFloat(price)
       })
-    })
-    .then((response) => response.json())
-    .then((response) => {
-      this.setState({visibleModal: null});
-      console.log(response);
-    })
-    .catch((error) => {
-      console.error(error);
-    })
+      let biggest = Math.max(...priceresult);
+      console.log("TOTAL:" + biggest)
+      console.log("PURCHASED DATE:" + date)
+      var results ={
+        "total": biggest,
+        "date": date,
+        "id": id,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email
+      }
+      console.log("what i am sending to phone", results)
+      return results
+    }
+
   }
-   handlePress = async () => {
-      console.log("Inside Handle");
-      this.setState({ visibleModal: 1 });
-      this.resizePicture()
-        .then()
-        .catch(err => console.log("err", err))
-   }
-   static navigationOptions = {
-     header: null,
-   }
 
-  // Modal Pop Setup
-
-    _renderModalContent = () => (
-      <View style={styles.modalContent}>
-        <Button
-          title="SENDING"
-          loading
-          loadingProps={{ size: "large", color: "rgba(111, 202, 186, 1)" }}
-          titleStyle={{ fontWeight: "700" }}
-          buttonStyle={{
-            backgroundColor: "rgba(106, 226, 198, 1)",
-            width: 300,
-            height: 60,
-            borderColor: "transparent",
-            borderWidth: 0,
-            borderRadius: 5
-          }}
-          containerStyle={{ marginTop: 20 }}
-        />
-      </View>
+  router.post('/', function(req, res, next) {
+  var photoname = uuid.v1()
+  var buf= Buffer.from(req.body.photo.base64, 'base64')  
+  var photoPath = 'tmp/' + photoname + '.png'
+  fs.writeFile(photoPath, buf, (err)=>{
+    if(err) throw err;
+    database.returningUsers(req.body.id)
+    .then((result) => 
+      googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
+        .then((result) => res.json(result))
+        .catch(next)
     );
-   render() {
-
-   const {navigation} = this.props;
-   const uri = navigation.getParam('uri', 'defaultvalue');
-   console.log("uri: ", uri);
-   return (
-
-     <View style={styles.container}>
-       <Image
-         style={styles.pictures}
-         source={ {uri: uri} }
-       />
-      <View style={styles.bottomBar}>
-         <TouchableOpacity style={styles.bottomButton} onPress={() => this.props.navigation.navigate('Camera')}>
-           <Octicons name="reply" size={30} color="white"/>
-         </TouchableOpacity>
-
-         <TouchableOpacity style={styles.bottomButton}>
-           <View>
-              <Ionicons name="ios-send" size={30} color="white" onPress={this.handlePress.bind(this)}/>
-           </View>
-         </TouchableOpacity>
-
-       </View>
-
-        <Modal isVisible={this.state.visibleModal === 1} onBackdropPress={() => this.setState({ visibleModal: null })} >
-          {this._renderModalContent()}
-        </Modal>
-
-
-   </View>
-   );
- }
-}
-
-const styles = StyleSheet.create({
- container: {
-   flex: 1,
-   backgroundColor: '#000'
- },
- faceText: {
-   color: '#FFD700',
-   fontWeight: 'bold',
-   textAlign: 'center',
-   margin: 10,
-   backgroundColor: 'transparent',
- },
- pictures: {
-   flex: 1,
-   flexWrap: 'wrap',
-   flexDirection: 'row',
-   justifyContent: 'space-around',
-   paddingVertical: 8,
- },
- bottomButton: {
-   flex: 1,
-   height: 58,
-   justifyContent: 'center',
-   alignItems: 'center',
- },
- bottomBar: {
-   paddingBottom: 5,
-   backgroundColor: 'transparent',
-   alignSelf: 'flex-end',
-   justifyContent: 'space-between',
-   flex: 0.13,
-   flexDirection: 'row',
- },
-  mod_container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  button: {
-    backgroundColor: "lightblue",
-    padding: 12,
-    margin: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 4,
-    borderColor: "rgba(0, 0, 0, 0.1)"
-  }
+  })
+  
+  
 });
-
-
-export default PhotoPreview;
+console.log(process.cwd())
+module.exports = router;
