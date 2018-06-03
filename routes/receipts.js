@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+
 const database = require("./data/database");
 const bodyParser = require('body-parser')
 
@@ -9,6 +10,13 @@ router.get('/', function(req, res, next) {
     .then((result) => {
 		res.send(result.rows);   
     });
+});
+
+
+
+router.post('/submit', function(req, res, next) {
+  console.log(req.body)
+  res.send("hello")
 });
 
 module.exports = router;
