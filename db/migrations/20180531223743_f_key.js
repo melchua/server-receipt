@@ -6,8 +6,6 @@ exports.up = function(knex, Promise) {
   table.foreign('user_id').references('users.id');
   table.integer('status_id');
   table.foreign('status_id').references('statuses.id');
-  table.integer('approved_by_id');
-  table.foreign('approved_by_id').references('users.id');
  });
 };
 
@@ -16,6 +14,5 @@ exports.down = function(knex, Promise) {
    table.dropColumn('category_id');
    table.dropColumn('user_id');
    table.dropColumn('status_id');
-   table.dropColumn('approved_by_id');
  });
 };

@@ -16,7 +16,9 @@ router.get('/', function(req, res, next) {
 
 router.post('/submit', function(req, res, next) {
   console.log(req.body)
-  res.send("hello")
+  database.instertReceipt(req.body)
+    .then(res.end())
+
 });
 
 module.exports = router;

@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
         t.integer('total');
         t.date('date');
         t.string('image_url');
+        t.string('description')
     });
 };
 
