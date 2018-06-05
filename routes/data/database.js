@@ -5,15 +5,17 @@ const knex = require('knex')({
   client: 'pg',
   version: '7.2',
   connection: {
-    user     : settings.user,
-    password : settings.password,
-    database : settings.database,
-    host     : settings.hostname,
+    user: settings.user,
+    password: settings.password,
+    database: settings.database,
+    host: settings.hostname,
   }
+
   });
 
   const returningReceipts = () => {
     return knex.raw(`
+
       select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description,
       u.first_name, u.last_name, u.email,
       c.cat_name, s.status_name, p.project_name
@@ -22,6 +24,7 @@ const knex = require('knex')({
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
       inner join projects p on p.id = r.project_id;`)
+
 
   }
 
