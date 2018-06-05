@@ -11,10 +11,10 @@ const knex = require('knex')({
     host: settings.hostname,
   }
 
-  });
+});
 
-  const returningReceipts = () => {
-    return knex.raw(`
+const returningReceipts = () => {
+  return knex.raw(`
 
       select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description,
       u.first_name, u.last_name, u.email,
@@ -26,49 +26,49 @@ const knex = require('knex')({
       inner join projects p on p.id = r.project_id;`)
 
 
-  }
+}
 
-  const returningUsers = (userId) => {
-    return knex('users').where('id', userId)
-  }
+const returningUsers = (userId) => {
+  return knex('users').where('id', userId)
+}
 
-  const insertReceipt = (phoneResObj) => {
-    let total = Number(phoneResObj.total)*100
-    return knex('receipts').insert({
-      location: phoneResObj.location,
-      total:total,
-      date:phoneResObj.date,
-      user_id:phoneResObj.user_id,
-      project_id:phoneResObj.project_id,
-      description: phoneResObj.description,
-      image_url:phoneResObj.image_url,
-      category_id: phoneResObj.category_id,
-      status_id: 1,
-    });
-  };
+const insertReceipt = (phoneResObj) => {
+  let total = Number(phoneResObj.total) * 100
+  return knex('receipts').insert({
+    location: phoneResObj.location,
+    total: total,
+    date: phoneResObj.date,
+    user_id: phoneResObj.user_id,
+    project_id: phoneResObj.project_id,
+    description: phoneResObj.description,
+    image_url: phoneResObj.image_url,
+    category_id: phoneResObj.category_id,
+    status_id: 1,
+  });
+};
 
-  const validateLogin = (email, password) => {
-    return knex('users')
-      .where({
-        email: email,
-        password: password
-      })
-      .select('id')
-  }
+const validateLogin = (email, password) => {
+  return knex('users')
+    .where({
+      email: email,
+      password: password
+    })
+    .select('id')
+}
 
-  exports.returningReceipts = returningReceipts;
-  exports.returningUsers = returningUsers;
-  exports.insertReceipt = insertReceipt;
-  exports.validateLogin = validateLogin;
+exports.returningReceipts = returningReceipts;
+exports.returningUsers = returningUsers;
+exports.insertReceipt = insertReceipt;
+exports.validateLogin = validateLogin;
 
 
-  // select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,
-  //     u.first_name, u.last_name, u.email,
-  //     u2.first_name as approved_first_name, u2.last_name as approved_last_name, u2.email as approved_email,
-  //     c.cat_name, s.status_name, p.project_name
-  //     from receipts r
-  //     inner join users u on u.id = r.user_id
-  //     inner join users u2 on u2.id = r.approved_by_id
-  //     inner join categories c on c.id = r.category_id
-  //     inner join statuses s on s.id = r.status_id
-  //     inner join projects p on p.id = r.project_id;
+// select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,
+//     u.first_name, u.last_name, u.email,
+//     u2.first_name as approved_first_name, u2.last_name as approved_last_name, u2.email as approved_email,
+//     c.cat_name, s.status_name, p.project_name
+//     from receipts r
+//     inner join users u on u.id = r.user_id
+//     inner join users u2 on u2.id = r.approved_by_id
+//     inner join categories c on c.id = r.category_id
+//     inner join statuses s on s.id = r.status_id
+//     inner join projects p on p.id = r.project_id;

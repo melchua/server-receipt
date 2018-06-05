@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 
 /* POST /user/login */
 
-function createToken(email,password) {
+function createToken(email, password) {
   var payload = {
     email,
     password
@@ -21,22 +21,22 @@ function createToken(email,password) {
   return newToken;
 }
 
-router.post('/login', function(req, res, next) {
+router.post('/login', function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
   console.log(email, password)
   database.validateLogin(email, password)
-  .then((result) => {
+    .then((result) => {
 
-  if(result[0]){
-  const toke = createToken(email,password);
-  console.log("Created new token: ", toke);
-  res.json(toke);
-  }else{
-    console.log("no way buddy")
-    res.send(401)
-  }
-  })
+      if (result[0]) {
+        const toke = createToken(email, password);
+        console.log("Created new token: ", toke);
+        res.json(toke);
+      } else {
+        console.log("no way buddy")
+        res.send(401)
+      }
+    })
 });
 
 module.exports = router;

@@ -18,7 +18,7 @@ function verifyToken(token) {
   // return decoded.email;
 }
 
-function googleVision(image, id, first_name, last_name, email){
+function googleVision(image, id, first_name, last_name, email) {
 
   return client
     .documentTextDetection(image)
