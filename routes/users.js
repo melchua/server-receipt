@@ -22,13 +22,21 @@ function createToken(email,password) {
 }
 
 router.post('/login', function(req, res, next) {
-  console.log(req.body);
   const email = req.body.email;
   const password = req.body.password;
+  console.log(email, password)
+  database.validateLogin(email, password)
+  .then((result) => {
+
+  if(result[0]){
   const toke = createToken(email,password);
   console.log("Created new token: ", toke);
   res.json(toke);
-
+  }else{
+    console.log("no way buddy")
+    res.send(401)
+  }
+  })
 });
 
 module.exports = router;

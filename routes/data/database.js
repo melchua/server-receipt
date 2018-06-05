@@ -47,11 +47,19 @@ const knex = require('knex')({
     });
   };
 
+  const validateLogin = (email, password) => {
+    return knex('users')
+      .where({
+        email: email,
+        password: password
+      })
+      .select('id')
+  }
 
   exports.returningReceipts = returningReceipts;
   exports.returningUsers = returningUsers;
   exports.insertReceipt = insertReceipt;
-
+  exports.validateLogin = validateLogin;
 
 
   // select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,

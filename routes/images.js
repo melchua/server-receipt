@@ -5,6 +5,8 @@ var bodyParser = require('body-parser')
 var app = express()
 var fs = require("fs")
 var uuid = require('node-uuid')
+var jwt = require('jsonwebtoken');
+
 
 //Google vision
 const vision = require('@google-cloud/vision');
@@ -12,8 +14,8 @@ const client = new vision.ImageAnnotatorClient();
 
 function verifyToken(token) {
   var decoded = jwt.verify(token, 'wakawaka');
-  // console.log("decoded", decoded);
-  return decoded.email;
+  console.log("decoded", decoded);
+  // return decoded.email;
 }
 
 function googleVision(image, id, first_name, last_name, email){
@@ -58,39 +60,28 @@ function googleVision(image, id, first_name, last_name, email){
   }
 }
 
-  router.post('/', function(req, res, next) {
+router.post('/', function (req, res, next) {
 
   console.log("running post request for images");
   console.log("headers:", req.headers);
-  console.log("authorization:", req.headers.authorization);
-  // console.log("Token verify: ", verifyToken(req.headers.authorization));
-  var photoname = uuid.v1();
-  var buf= Buffer.from(req.body.photo.base64, 'base64');
-  var photoPath = 'tmp/' + photoname + '.png';
-  fs.writeFile(photoPath, buf, (err)=>{
-    if(err) throw err;
-    database.returningUsers(req.body.id)
-    .then((result) =>
-      googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
-        .then((result) => res.json(result))
-        .catch(next)
-    );
+  console.log("authorization:", req.headers.authorization.split(' ')[1]);
+  jwt.verify(req.headers.authorization.split(' ')[1], 'samsam', function (err, token) {
+    if (err) {
+      res.send(401);
+    } else {
+      var photoname = uuid.v1();
+      var buf = Buffer.from(req.body.photo.base64, 'base64');
+      var photoPath = 'tmp/' + photoname + '.png';
+      fs.writeFile(photoPath, buf, (err) => {
+        if (err) throw err;
+        database.returningUsers(req.body.id)
+          .then((result) =>
+            googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
+            .then((result) => res.json(result))
+            .catch(next)
+          );
+      });
+    }
   });
-
-
-// router.post('/', function (req, res, next) {
-//   var photoname = uuid.v1()
-//   var buf = Buffer.from(req.body.photo.base64, 'base64')
-//   var photoPath = 'tmp/' + photoname + '.png'
-//   fs.writeFile(photoPath, buf, (err) => {
-//     if (err) throw err;
-//     database.returningUsers(req.body.id)
-//       .then((result) =>
-//         googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
-//         .then((result) => res.json(result))
-//         .catch(next)
-//       );
-//   })
-
 });
 module.exports = router;
