@@ -15,8 +15,7 @@ const knex = require('knex')({
 
 const returningReceipts = () => {
   return knex.raw(`
-
-      select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description,
+      select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description, r.id, r.image_url,
       u.first_name, u.last_name, u.email,
       c.cat_name, s.status_name, p.project_name
       from receipts r
@@ -24,8 +23,6 @@ const returningReceipts = () => {
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
       inner join projects p on p.id = r.project_id;`)
-
-
 }
 
 const returningUsers = (userId) => {
