@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
         t.string('last_name');
         t.string('email');
         t.string('password');
-
+        t.boolean('admin');
     });
 };
 
