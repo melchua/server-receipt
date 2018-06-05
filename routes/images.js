@@ -18,7 +18,7 @@ function verifyToken(token) {
   // return decoded.email;
 }
 
-function googleVision(image, id, first_name, last_name, email) {
+function googleVision(image, id) {
 
   return client
     .documentTextDetection(image)
@@ -49,11 +49,7 @@ function googleVision(image, id, first_name, last_name, email) {
     var results = {
       "total": biggest,
       "date": date,
-      "id": id,
-      "first_name": first_name,
-      "last_name": last_name,
-      "email": email
-
+      "user_id": id,
     }
     console.log("what i am sending to phone", results)
     return results
@@ -61,26 +57,26 @@ function googleVision(image, id, first_name, last_name, email) {
 }
 
 router.post('/', function (req, res, next) {
-
-  console.log("running post request for images");
-  console.log("headers:", req.headers);
-  console.log("authorization:", req.headers.authorization.split(' ')[1]);
-  jwt.verify(req.headers.authorization.split(' ')[1], 'samsam', function (err, token) {
+  jwt.verify(req.headers.authorization.split(' ')[1], 'wakawaka', function (err, token) {
     if (err) {
       res.send(401);
     } else {
-      var photoname = uuid.v1();
-      var buf = Buffer.from(req.body.photo.base64, 'base64');
-      var photoPath = 'tmp/' + photoname + '.png';
-      fs.writeFile(photoPath, buf, (err) => {
-        if (err) throw err;
-        database.returningUsers(req.body.id)
-          .then((result) =>
-            googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
-            .then((result) => res.json(result))
-            .catch(next)
-          );
-      });
+      database.validateLogin(token.email, token.password)
+        .then((result) => {
+          const userId = result[0].id
+          var photoname = uuid.v1();
+          var buf = Buffer.from(req.body.photo.base64, 'base64');
+          var photoPath = 'tmp/' + photoname + '.png';
+          fs.writeFile(photoPath, buf, (err) => {
+            if (err) throw err;
+            database.returningUsers(userId)
+              .then((result) =>
+                googleVision(photoPath, userId )
+                .then((result) => res.json(result))
+                .catch(next)
+              );
+          });
+        })
     }
   });
 });
