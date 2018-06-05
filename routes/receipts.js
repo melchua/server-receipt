@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 router.get('/', function(req, res, next) {
     database.returningReceipts()
     .then((result) => {
-		res.send(result.rows);   
+		res.send(result.rows);
     });
 });
 
@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 
 router.post('/submit', function(req, res, next) {
   console.log(req.body)
-  database.instertReceipt(req.body)
+  database.insertReceipt(req.body)
     .then(res.end())
 
 });

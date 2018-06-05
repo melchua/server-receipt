@@ -10,6 +10,12 @@ var uuid = require('node-uuid')
 const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
+function verifyToken(token) {
+  var decoded = jwt.verify(token, 'wakawaka');
+  // console.log("decoded", decoded);
+  return decoded.email;
+}
+
 function googleVision(image, id, first_name, last_name, email){
 
   return client
@@ -17,7 +23,7 @@ function googleVision(image, id, first_name, last_name, email){
     .then(results => {
       const fullTextAnnotation = results[0].fullTextAnnotation;
       return ocrCheck(fullTextAnnotation.text);
-    })
+    });
 
     function ocrCheck(ocrresult) {
       let string = ocrresult
@@ -35,10 +41,10 @@ function googleVision(image, id, first_name, last_name, email){
           price = price.slice(1)
         }
         return parseFloat(price)
-      })
+      });
       let biggest = Math.max(...priceresult);
-      console.log("TOTAL:" + biggest)
-      console.log("PURCHASED DATE:" + date)
+      console.log("TOTAL:" + biggest);
+      console.log("PURCHASED DATE:" + date);
       var results ={
         "total": biggest,
         "date": date,
@@ -46,28 +52,34 @@ function googleVision(image, id, first_name, last_name, email){
         "first_name": first_name,
         "last_name": last_name,
         "email": email
-      }
-      console.log("what i am sending to phone", results)
-      return results
+      };
+      console.log("what i am sending to phone", results);
+      return results;
     }
 
   }
 
+
   router.post('/', function(req, res, next) {
-  var photoname = uuid.v1()
-  var buf= Buffer.from(req.body.photo.base64, 'base64')  
-  var photoPath = 'tmp/' + photoname + '.png'
+
+  console.log("running post request for images");
+  console.log("headers:", req.headers);
+  console.log("authorization:", req.headers.authorization);
+  // console.log("Token verify: ", verifyToken(req.headers.authorization));
+  var photoname = uuid.v1();
+  var buf= Buffer.from(req.body.photo.base64, 'base64');
+  var photoPath = 'tmp/' + photoname + '.png';
   fs.writeFile(photoPath, buf, (err)=>{
     if(err) throw err;
     database.returningUsers(req.body.id)
-    .then((result) => 
+    .then((result) =>
       googleVision(photoPath, result[0].id, result[0].first_name, result[0].last_name, result[0].email)
         .then((result) => res.json(result))
         .catch(next)
     );
-  })
-  
-  
+  });
+
+
 });
 console.log(process.cwd())
 module.exports = router;
