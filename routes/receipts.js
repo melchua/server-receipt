@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
 
 router.post('/submit', function (req, res, next) {
   console.log(req.body)
-  database.instertReceipt(req.body)
+  database.insertReceipt(req.body)
     .then(res.end())
 
 });

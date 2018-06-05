@@ -10,6 +10,7 @@ const knex = require('knex')({
     database: settings.database,
     host: settings.hostname,
   }
+
 });
 
 const returningReceipts = () => {
@@ -22,14 +23,13 @@ const returningReceipts = () => {
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
       inner join projects p on p.id = r.project_id;`)
-
 }
 
 const returningUsers = (userId) => {
   return knex('users').where('id', userId)
 }
 
-const instertReceipt = (phoneResObj) => {
+const insertReceipt = (phoneResObj) => {
   let total = Number(phoneResObj.total) * 100
   return knex('receipts').insert({
     location: phoneResObj.location,
@@ -41,14 +41,22 @@ const instertReceipt = (phoneResObj) => {
     image_url: phoneResObj.image_url,
     category_id: phoneResObj.category_id,
     status_id: 1,
-  })
-}
+  });
+};
 
+const validateLogin = (email, password) => {
+  return knex('users')
+    .where({
+      email: email,
+      password: password
+    })
+    .select('id')
+}
 
 exports.returningReceipts = returningReceipts;
 exports.returningUsers = returningUsers;
-exports.instertReceipt = instertReceipt;
-
+exports.insertReceipt = insertReceipt;
+exports.validateLogin = validateLogin;
 
 
 // select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,

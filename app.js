@@ -10,6 +10,7 @@ var knex = require('knex')(config[env]);
 var indexRouter = require('./routes/index');
 var receiptsRouter = require('./routes/receipts');
 var imagesRouter = require('./routes/images');
+var usersRouter = require('./routes/users')
 
 var app = express();
 app.use(bodyParser.urlencoded({
@@ -35,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/receipts', receiptsRouter);
 app.use('/images', imagesRouter);
+app.use('/users', usersRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
