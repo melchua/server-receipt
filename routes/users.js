@@ -8,10 +8,11 @@ const bodyParser = require('body-parser');
 
 /* POST /user/login */
 
-function createToken(email, password) {
+function createToken(email, password, admin) {
   var payload = {
     email,
-    password
+    password,
+    admin
   };
   var secretKey = "wakawaka";
   var newToken = jwt.sign(payload, secretKey, {
@@ -24,17 +25,15 @@ function createToken(email, password) {
 router.post('/login', function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
-  console.log(email, password)
+  console.log("woof", email, password)
   database.validateLogin(email, password)
     .then((result) => {
-
       if (result[0]) {
-        const toke = createToken(email, password);
-        console.log("Created new token: ", toke);
+        const toke = createToken(email, password, result[0].admin);
+        console.log(toke)
         res.json(toke);
-      } else {
-        console.log("no way buddy")
-        res.send(401)
+      } else if(!result[0]) {
+        res.sendStatus(401)
       }
     })
 });
