@@ -14,10 +14,10 @@ const knex = require('knex')({
 
 const returningReceipts = () => {
   return knex.raw(`
-      select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description,
-      u.first_name, u.last_name, u.email, 
+      select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description, r.id, r.image_url,
+      u.first_name, u.last_name, u.email,
       c.cat_name, s.status_name, p.project_name
-      from receipts r 
+      from receipts r
       inner join users u on u.id = r.user_id
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
@@ -52,10 +52,10 @@ exports.instertReceipt = instertReceipt;
 
 
 // select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,
-//     u.first_name, u.last_name, u.email, 
+//     u.first_name, u.last_name, u.email,
 //     u2.first_name as approved_first_name, u2.last_name as approved_last_name, u2.email as approved_email,
 //     c.cat_name, s.status_name, p.project_name
-//     from receipts r 
+//     from receipts r
 //     inner join users u on u.id = r.user_id
 //     inner join users u2 on u2.id = r.approved_by_id
 //     inner join categories c on c.id = r.category_id
