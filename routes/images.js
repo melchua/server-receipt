@@ -8,7 +8,6 @@ var uuid = require('node-uuid')
 var jwt = require('jsonwebtoken');
 var AWS = require('aws-sdk');
 var s3 = new AWS.S3();
-var amzLink = "";
 
 
 //Google vision
@@ -23,38 +22,55 @@ function verifyToken(token) {
 
 function amazonUpload(image) {
   let keyName = image.replace("tmp/", "")
-  let link =""
   var bucketName = 'lhl-final-receipt';
-  fs.readFile(image, function (err, data) {
-    if (err) throw err;
-    params = {Bucket: bucketName, Key: keyName, Body: data };
-    s3.upload(params, function(err, data) {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log("Successfully uploaded data!");
-        link = data.Location
-        console.log(link)
-        fs.unlinkSync(image)
-        console.log("file delete sucess!")
-      }
-    return link
-    });
-  });
+  return new Promise ((resolve, reject) => {
+    fs.readFile(image, function (err, data) {
+      if (err) throw err;
+      params = {Bucket: bucketName, Key: keyName, Body: data };
+      s3.upload(params, function(err, data) {
+        if (err) {
+          reject(err)
+        } else {
+          console.log("Successfully uploaded data!");
+          fs.unlinkSync(image)
+          console.log("file delete sucess!")
+          resolve(data.Location)
+        }
+      });
+    })
+  })
+
 }
 
 
 function amzGoog(image, id) {
 
-  return client
-    .documentTextDetection(image)
-    .then(results => {
-      amzLink = amazonUpload(image)
-      const fullTextAnnotation = results[0].fullTextAnnotation;
-      return ocrCheckAmz(fullTextAnnotation.text);
-    });
+  return Promise.all([amazonUpload(image), client.documentTextDetection(image)]).then(results => {
+    console.log("first result:", results[0]);
+    console.log("second result:", results[1]);
+    const fullTextAnnotation = results[1][0].fullTextAnnotation;
+    return ocrCheckAmz(fullTextAnnotation.text, results[0]);
+  })
 
-  function ocrCheckAmz(ocrresult) {
+//   return client
+//     .documentTextDetection(image)
+//     .then((results) => {
+//       const link = amazonUpload(image)
+//       console.log("inpromise:")
+//       console.log("1st result: ", results )
+//       return Promise.all([amazonUpload(image), results])
+//       return results, link
+// })
+//     .then((results, link) => {
+//       console.log("in 2nd promise")
+//       console.log("2nd result", results)
+//       const fullTextAnnotation = results[0].fullTextAnnotation;
+//       console.log(amz)
+//       return ocrCheckAmz(fullTextAnnotation.text, link);
+//     })
+
+
+  function ocrCheckAmz(ocrresult, link) {
 
     //Parsing data from OCR
     let string = ocrresult
@@ -75,7 +91,7 @@ function amzGoog(image, id) {
       "total": biggest,
       "date": date,
       "user_id": id,
-      "image_url": amzLink,
+      "image_url": link,
     }
     console.log("what i am sending to phone", results)
     return results
