@@ -8,10 +8,11 @@ const bodyParser = require('body-parser');
 
 /* POST /user/login */
 
-function createToken(email, password) {
+function createToken(email, password, admin) {
   var payload = {
     email,
-    password
+    password,
+    admin
   };
   var secretKey = "wakawaka";
   var newToken = jwt.sign(payload, secretKey, {
@@ -28,7 +29,7 @@ router.post('/login', function (req, res, next) {
   database.validateLogin(email, password)
     .then((result) => {
       if (result[0]) {
-        const token = createToken(email, password);
+        const token = createToken(email, password, result[0].admin);
         console.log("Created new token: ", token);
         res.json({token}); // response.token
       } else {

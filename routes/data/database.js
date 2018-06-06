@@ -52,7 +52,7 @@ const validateLogin = (email, password) => {
       email: email,
       password: password
     })
-    .select('id');
+    .select('id', 'admin');
 };
 
 exports.returningReceipts = returningReceipts;
