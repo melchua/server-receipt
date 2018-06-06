@@ -64,7 +64,10 @@ function amzGoog(image, id) {
     let datefound = string.match(datereg)
     let date = datefound[0]
     let priceresult = pricefound.map(function (price) {
-      price.replace("$", "")
+      if (price[0] === "$") {
+        price = price.slice(1)
+      }
+      return parseFloat(price)
     })
     let biggest = Math.max(...priceresult);
 
