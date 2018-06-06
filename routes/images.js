@@ -8,6 +8,7 @@ var uuid = require('node-uuid')
 var jwt = require('jsonwebtoken');
 var AWS = require('aws-sdk');
 var s3 = new AWS.S3();
+var amzLink = "";
 
 
 //Google vision
@@ -22,6 +23,8 @@ function verifyToken(token) {
 
 function amazonUpload(image) {
   let keyName = image.replace("tmp/", "")
+  let link =""
+  var bucketName = 'lhl-final-receipt';
   fs.readFile(image, function (err, data) {
     if (err) throw err;
     params = {Bucket: bucketName, Key: keyName, Body: data };
@@ -30,7 +33,7 @@ function amazonUpload(image) {
         console.log(err)
       } else {
         console.log("Successfully uploaded data!");
-        let link = data.Location
+        link = data.Location
         console.log(link)
         fs.unlinkSync(image)
         console.log("file delete sucess!")
@@ -46,11 +49,12 @@ function amzGoog(image, id) {
   return client
     .documentTextDetection(image)
     .then(results => {
+      amzLink = amazonUpload(image)
       const fullTextAnnotation = results[0].fullTextAnnotation;
-      return ocrCheckAmz(fullTextAnnotation.text, image);
+      return ocrCheckAmz(fullTextAnnotation.text);
     });
 
-  function ocrCheckAmz(ocrresult, path) {
+  function ocrCheckAmz(ocrresult) {
 
     //Parsing data from OCR
     let string = ocrresult
@@ -63,10 +67,6 @@ function amzGoog(image, id) {
       price.replace("$", "")
     })
     let biggest = Math.max(...priceresult);
-
-    //amazon buisness
-    var bucketName = 'lhl-final-receipt';
-    var amzLink = amazonUpload(path)
 
     var results = {
       "total": biggest,
