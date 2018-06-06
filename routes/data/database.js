@@ -13,7 +13,7 @@ const knex = require('knex')({
 
 });
 
-const returningReceipts = () => {
+const returningReceipts = (user_id) => {
   return knex.raw(`
       select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description, r.id, r.image_url,
       u.first_name, u.last_name, u.email,
@@ -22,12 +22,14 @@ const returningReceipts = () => {
       inner join users u on u.id = r.user_id
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
-      inner join projects p on p.id = r.project_id;`)
-}
+      inner join projects p on p.id = r.project_id
+      where r.user_id = ${user_id}
+      ;`);
+};
 
 const returningUsers = (userId) => {
-  return knex('users').where('id', userId)
-}
+  return knex('users').where('id', userId);
+};
 
 const insertReceipt = (phoneResObj) => {
   let total = Number(phoneResObj.total) * 100
@@ -50,8 +52,8 @@ const validateLogin = (email, password) => {
       email: email,
       password: password
     })
-    .select('id')
-}
+    .select('id');
+};
 
 exports.returningReceipts = returningReceipts;
 exports.returningUsers = returningUsers;
