@@ -52,23 +52,6 @@ function amzGoog(image, id) {
     return ocrCheckAmz(fullTextAnnotation.text, results[0]);
   })
 
-//   return client
-//     .documentTextDetection(image)
-//     .then((results) => {
-//       const link = amazonUpload(image)
-//       console.log("inpromise:")
-//       console.log("1st result: ", results )
-//       return Promise.all([amazonUpload(image), results])
-//       return results, link
-// })
-//     .then((results, link) => {
-//       console.log("in 2nd promise")
-//       console.log("2nd result", results)
-//       const fullTextAnnotation = results[0].fullTextAnnotation;
-//       console.log(amz)
-//       return ocrCheckAmz(fullTextAnnotation.text, link);
-//     })
-
 
   function ocrCheckAmz(ocrresult, link) {
 
