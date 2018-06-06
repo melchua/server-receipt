@@ -7,11 +7,11 @@ const bodyParser = require('body-parser');
 
 
 
-router.post('/submit', function (req, res, next) {
-  console.log(req.body);
-  database.insertReceipt(req.body)
-    .then(res.end());
+// router.post('/submit', function (req, res, next) {
+//   console.log(req.body);
+//   database.insertReceipt(req.body)
+//     .then(res.end());
 
-});
+// });
 
 module.exports = router;

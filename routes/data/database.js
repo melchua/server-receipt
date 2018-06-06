@@ -27,12 +27,17 @@ const returningReceipts = (user_id) => {
       ;`);
 };
 
+// gets a list of all projects
+const returnProjectList = () => {
+  return knex('projects').select('id', 'project_name');
+};
+
 const returningUsers = (userId) => {
   return knex('users').where('id', userId);
 };
 
 const insertReceipt = (phoneResObj) => {
-  let total = Number(phoneResObj.total) * 100
+  let total = Number(phoneResObj.total) * 100;
   return knex('receipts').insert({
     location: phoneResObj.location,
     total: total,
@@ -59,15 +64,5 @@ exports.returningReceipts = returningReceipts;
 exports.returningUsers = returningUsers;
 exports.insertReceipt = insertReceipt;
 exports.validateLogin = validateLogin;
+exports.returnProjectList = returnProjectList;
 
-
-// select r.category_id, r.user_id, r.status_id, r.approved_by_id, r.total, r.location, r.date,
-//     u.first_name, u.last_name, u.email,
-//     u2.first_name as approved_first_name, u2.last_name as approved_last_name, u2.email as approved_email,
-//     c.cat_name, s.status_name, p.project_name
-//     from receipts r
-//     inner join users u on u.id = r.user_id
-//     inner join users u2 on u2.id = r.approved_by_id
-//     inner join categories c on c.id = r.category_id
-//     inner join statuses s on s.id = r.status_id
-//     inner join projects p on p.id = r.project_id;
