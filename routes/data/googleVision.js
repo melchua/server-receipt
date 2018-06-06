@@ -26,7 +26,6 @@ const vision = require('@google-cloud/vision');
 const client = new vision.ImageAnnotatorClient();
 
 function googleVision(image) {
-    console.log("ran googlefunction")
     let ocrresult = ""
     //google vision runthrough
 

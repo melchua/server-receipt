@@ -6,7 +6,8 @@ exports.seed = function(knex, Promise) {
       // Inserts seed entries
       return knex('categories').insert([
         {id:1, cat_name: 'Food'},
-        {id:2, cat_name: 'Transportation'}
+        {id:2, cat_name: 'Transportation'},
+        {id:3, cat_name: 'Entertainment'}
       ]);
     });
 };
