@@ -71,7 +71,7 @@ router.post('/', function (req, res, next) {
             if (err) throw err;
             database.returningUsers(userId)
               .then((result) =>
-                googleVision(photoPath, userId )
+                googleVision(photoPath, userId)
                 .then((result) => res.json(result))
                 .catch(next)
               );
