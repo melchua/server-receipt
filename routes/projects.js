@@ -14,7 +14,7 @@ router.get('/', function (req, res, next) {
    database.returnProjectList()
      .then((result) => {
        console.log('rows: ', result);
-       res.send(result.rows);
+       res.send(result);
      }).catch((err) => console.error("Error:", err));
 });
 
