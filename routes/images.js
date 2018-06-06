@@ -6,6 +6,8 @@ var app = express()
 var fs = require("fs")
 var uuid = require('node-uuid')
 var jwt = require('jsonwebtoken');
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3();
 
 
 //Google vision
@@ -18,38 +20,59 @@ function verifyToken(token) {
   // return decoded.email;
 }
 
-function googleVision(image, id) {
+function amazonUpload(image) {
+  let keyName = image.replace("tmp/", "")
+  fs.readFile(image, function (err, data) {
+    if (err) throw err;
+    params = {Bucket: bucketName, Key: keyName, Body: data };
+    s3.upload(params, function(err, data) {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log("Successfully uploaded data!");
+        let link = data.Location
+        console.log(link)
+        fs.unlinkSync(image)
+        console.log("file delete sucess!")
+      }
+    return link
+    });
+  });
+}
+
+
+function amzGoog(image, id) {
 
   return client
     .documentTextDetection(image)
     .then(results => {
       const fullTextAnnotation = results[0].fullTextAnnotation;
-      return ocrCheck(fullTextAnnotation.text);
+      return ocrCheckAmz(fullTextAnnotation.text, image);
     });
 
-  function ocrCheck(ocrresult) {
-    let string = ocrresult
+  function ocrCheckAmz(ocrresult, path) {
 
+    //Parsing data from OCR
+    let string = ocrresult
     const pricereg = /^[$0-9]+(\.[0-9]{2})$/gm
     const datereg = /((0?[13578]|10|12)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[01]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1}))|(0?[2469]|11)(-|\/)(([1-9])|(0[1-9])|([12])([0-9]?)|(3[0]?))(-|\/)((19)([2-9])(\d{1})|(20)([01])(\d{1})|([8901])(\d{1})))/gm
-
     let pricefound = string.match(pricereg)
     let datefound = string.match(datereg)
     let date = datefound[0]
-
-
     let priceresult = pricefound.map(function (price) {
-      // price.replace("$", "") this is a better way of doing it
-      if (price[0] === "$") {
-        price = price.slice(1)
-      }
-      return parseFloat(price)
+      price.replace("$", "")
     })
     let biggest = Math.max(...priceresult);
+
+    //amazon buisness
+    var bucketName = 'lhl-final-receipt';
+    var amzLink = amazonUpload(path)
+
     var results = {
       "total": biggest,
       "date": date,
       "user_id": id,
+      "image_url": amzLink,
     }
     console.log("what i am sending to phone", results)
     return results
@@ -71,7 +94,7 @@ router.post('/', function (req, res, next) {
             if (err) throw err;
             database.returningUsers(userId)
               .then((result) =>
-                googleVision(photoPath, userId)
+                amzGoog(photoPath, userId)
                 .then((result) => res.json(result))
                 .catch(next)
               );
