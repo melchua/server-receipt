@@ -27,15 +27,15 @@ function amazonUpload(image) {
     fs.readFile(image, function (err, data) {
       if (err) throw err;
       params = {Bucket: bucketName, Key: imageName, Body: data };
-      console.log("uploading to amazon key", imageName, "bucket", bucketName, "body", data)
       s3.upload(params, function(err, data) {
         if (err) {
           console.log("error in upload", err)
           reject(err);
         } else {
-          console.log("Successfully uploaded data!");
-          fs.unlinkSync(image);
-          console.log("file delete sucess!");
+          fs.unlink(image, (err)=> {
+            if (err) throw err;
+            console.log("file delete sucess!");
+          });
           resolve(data.Location);
         }
       });
