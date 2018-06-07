@@ -21,14 +21,16 @@ function verifyToken(token) {
 }
 
 function amazonUpload(image) {
-  let keyName = image.replace("tmp/", "");
+  let imageName = image.replace("tmp/", "");
   var bucketName = 'lhl-final-receipt';
   return new Promise ((resolve, reject) => {
     fs.readFile(image, function (err, data) {
       if (err) throw err;
-      params = {Bucket: bucketName, Key: keyName, Body: data };
+      params = {Bucket: bucketName, Key: imageName, Body: data };
+      console.log("uploading to amazon key", imageName, "bucket", bucketName, "body", data)
       s3.upload(params, function(err, data) {
         if (err) {
+          console.log("error in upload", err)
           reject(err);
         } else {
           console.log("Successfully uploaded data!");
@@ -54,7 +56,6 @@ function amzGoog(image, id) {
 
 
   function ocrCheckAmz(ocrresult, link) {
-
     //Parsing data from OCR
     let string = ocrresult
     const pricereg = /^[$0-9]+(\.[0-9]{2})$/gm
@@ -69,7 +70,6 @@ function amzGoog(image, id) {
       return parseFloat(price)
     })
     let biggest = Math.max(...priceresult);
-
     var results = {
       "total": biggest,
       "date": date,
@@ -94,6 +94,7 @@ router.post('/', function (req, res, next) {
           var photoPath = 'tmp/' + photoname + '.png';
           fs.writeFile(photoPath, buf, (err) => {
             if (err) throw err;
+            console.log(userId)
             database.returningUsers(userId)
               .then((result) =>
                 amzGoog(photoPath, userId)
