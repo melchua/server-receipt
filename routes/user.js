@@ -41,10 +41,12 @@ router.post('/login', function (req, res, next) {
   database.validateLogin(email, password)
     .then((result) => {
       if (result[0]) {
+        console.log(result)
         const token = createToken(email, password, result[0].admin);
         console.log("Created new token: ", token);
         res.json({
-          token
+          token:token,
+          admin:result[0].admin
         }); // response.token
       } else {
         console.log("no way buddy");
@@ -56,6 +58,7 @@ router.post('/login', function (req, res, next) {
 /* GET /user/receipts */
 
 router.get('/receipts', function (req, res, next) {
+  console.log(req.headers.authorization.split(' ')[1])
   jwt.verify(req.headers.authorization.split(' ')[1], 'wakawaka', function (err, token) {
     if (err) {
       res.send(401);
