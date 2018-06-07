@@ -38,7 +38,7 @@ router.post('/login', function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
   console.log(email, password);
-  database.validateLogin(email, password, id)
+  database.validateLogin(email, password)
     .then((result) => {
       if (result[0]) {
         console.log(result);
@@ -47,7 +47,7 @@ router.post('/login', function (req, res, next) {
         res.json({
           token,
           admin:result[0].admin,
-          id
+          id: result[0].id
         }); // response.token
       } else {
         console.log("no way buddy");
