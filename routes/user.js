@@ -47,7 +47,9 @@ router.post('/login', function (req, res, next) {
         res.json({
           token,
           admin:result[0].admin,
-          id: result[0].id
+          id: result[0].id,
+          first_name: result[0].first_name,
+          last_name:result[0].last_name
         }); // response.token
       } else {
         console.log("no way buddy");
