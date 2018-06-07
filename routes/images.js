@@ -1,10 +1,10 @@
 const database = require("./data/database");
-var express = require('express')
+var express = require('express');
 var router = express.Router();
-var bodyParser = require('body-parser')
-var app = express()
-var fs = require("fs")
-var uuid = require('node-uuid')
+var bodyParser = require('body-parser');
+var app = express();
+var fs = require("fs");
+var uuid = require('node-uuid');
 var jwt = require('jsonwebtoken');
 var AWS = require('aws-sdk');
 var s3 = new AWS.S3();
@@ -21,7 +21,7 @@ function verifyToken(token) {
 }
 
 function amazonUpload(image) {
-  let keyName = image.replace("tmp/", "")
+  let keyName = image.replace("tmp/", "");
   var bucketName = 'lhl-final-receipt';
   return new Promise ((resolve, reject) => {
     fs.readFile(image, function (err, data) {
@@ -29,16 +29,16 @@ function amazonUpload(image) {
       params = {Bucket: bucketName, Key: keyName, Body: data };
       s3.upload(params, function(err, data) {
         if (err) {
-          reject(err)
+          reject(err);
         } else {
           console.log("Successfully uploaded data!");
-          fs.unlinkSync(image)
-          console.log("file delete sucess!")
-          resolve(data.Location)
+          fs.unlinkSync(image);
+          console.log("file delete sucess!");
+          resolve(data.Location);
         }
       });
-    })
-  })
+    });
+  });
 
 }
 

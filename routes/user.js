@@ -25,7 +25,7 @@ function createToken(email, password, admin) {
 /* POST /user/receipts/submit */
 
 router.post('/receipts/submit', function (req, res, next) {
-  console.log(req.body)
+  console.log(req.body);
   database.insertReceipt(req.body)
     .then(res.end());
 
@@ -38,15 +38,16 @@ router.post('/login', function (req, res, next) {
   const email = req.body.email;
   const password = req.body.password;
   console.log(email, password);
-  database.validateLogin(email, password)
+  database.validateLogin(email, password, id)
     .then((result) => {
       if (result[0]) {
-        console.log(result)
+        console.log(result);
         const token = createToken(email, password, result[0].admin);
         console.log("Created new token: ", token);
         res.json({
-          token:token,
-          admin:result[0].admin
+          token,
+          admin:result[0].admin,
+          id
         }); // response.token
       } else {
         console.log("no way buddy");
