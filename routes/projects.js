@@ -18,4 +18,13 @@ router.get('/', function (req, res, next) {
      }).catch((err) => console.error("Error:", err));
 });
 
+router.post('/', function (req, res, next) {
+  console.log("receipt id", req.body.project_name)
+  database.insertProject(req.body.project_name)
+    .then(res.end())
+    .catch((error) => {
+      console.log(error)
+    })
+});
+
 module.exports = router;

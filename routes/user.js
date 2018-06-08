@@ -68,10 +68,12 @@ router.get('/receipts', function (req, res, next) {
     } else {
       database.validateLogin(token.email, token.password)
         .then((result) => {
+          const isAdmin = result[0].admin
           const userId = result[0].id;
           database.returningReceipts(userId)
             .then((result) => {
-              res.send(result.rows);
+              let receipts = result.rows
+              res.send({receipts: receipts, isAdmin: isAdmin});
             });
         });
     }

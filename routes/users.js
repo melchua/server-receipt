@@ -50,18 +50,30 @@ router.get('/receipts', function (req, res, next) {
       console.log("outside:", token.email);
      database.validateLogin(token.email, token.password)
        .then((result) => {
-         console.log("email: ", token.email);
-         console.log("password", token.password);
+        const isAdmin = result[0].admin
          const userId = result[0].id;
          database.returnAllReceipts()
-           .then((result) => {
-             console.log('rows: ', result);
-             res.send(result.rows);
-           });
+         .then((result) => {
+          let receipts = result.rows
+          res.send({receipts: receipts, isAdmin: isAdmin});
+        });
        });
     }
   });
 });
+
+router.post('/receipt/status', function (req, res, next) {
+  console.log("receipt id", req.body.receipt_id, "status id", req.body.status_id)
+  database.updateReceiptStatus(req.body.receipt_id, req.body.status_id)
+    .then(res.end())
+    .catch((error) => {
+      console.log(error)
+    })
+});
+
+
+
+
 
 // Testing for the above
 

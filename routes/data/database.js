@@ -18,13 +18,14 @@ const returningReceipts = (user_id) => {
       select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description, r.id, r.image_url,
       u.first_name, u.last_name, u.email,
       c.cat_name, s.status_name, p.project_name
-      from receipts r
+      from receipts r 
       inner join users u on u.id = r.user_id
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
       inner join projects p on p.id = r.project_id
       where r.user_id = ${user_id}
-      ;`);
+      ORDER BY r.id DESC;`)
+
 };
 
 const returnAllReceipts = () => {
@@ -32,12 +33,12 @@ const returnAllReceipts = () => {
       select r.category_id, r.user_id, r.status_id, r.total, r.location, r.date, r.description, r.id, r.image_url,
       u.first_name, u.last_name, u.email,
       c.cat_name, s.status_name, p.project_name
-      from receipts r
+      from receipts r 
       inner join users u on u.id = r.user_id
       inner join categories c on c.id = r.category_id
       inner join statuses s on s.id = r.status_id
       inner join projects p on p.id = r.project_id
-      ;`);
+      ORDER BY r.id DESC;`)
 };
 
 // gets a list of all projects
@@ -73,9 +74,29 @@ const validateLogin = (email, password) => {
     .select('id', 'admin', 'first_name', 'last_name');
 };
 
+const updateReceiptStatus = (receipt_id, status_id) => {
+  console.log("receipt", receipt_id, "status", status_id )
+  return knex('receipts')
+    .where({
+      id: receipt_id
+    })
+    .update({
+      status_id: status_id
+    })
+}
+
+const insertProject = (projectName) => {
+  console.log(projectName)
+  return knex('projects').insert({
+    project_name:projectName,
+  });
+};
+
 exports.returningReceipts = returningReceipts;
 exports.returningUsers = returningUsers;
 exports.insertReceipt = insertReceipt;
 exports.validateLogin = validateLogin;
 exports.returnProjectList = returnProjectList;
 exports.returnAllReceipts = returnAllReceipts;
+exports.updateReceiptStatus = updateReceiptStatus;
+exports.insertProject = insertProject;
