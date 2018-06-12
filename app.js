@@ -13,6 +13,7 @@ var imagesRouter = require('./routes/images');
 var usersRouter = require('./routes/users');
 var userRouter = require('./routes/user');
 var projectRouter = require('./routes/projects');
+var categoryRouter = require('./routes/categories');
 
 var app = express();
 app.use(function(req, res, next) {
@@ -53,6 +54,7 @@ app.use('/images', imagesRouter);
 app.use('/users', usersRouter);
 app.use('/user', userRouter);
 app.use('/projects', projectRouter);
+app.use('/categories', categoryRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
