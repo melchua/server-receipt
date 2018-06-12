@@ -43,7 +43,9 @@ const returnAllReceipts = () => {
 
 // gets a list of all projects
 const returnProjectList = () => {
-  return knex('projects').select('id', 'project_name');
+  return knex('projects')
+  .select('id', 'project_name')
+  .orderBy('id','DESC');
 };
 
 const returningUsers = (userId) => {
@@ -92,6 +94,11 @@ const insertProject = (projectName) => {
   });
 };
 
+
+const returnCategoriesList = () => {
+  return knex('categories').select('id', 'cat_name');
+};
+
 exports.returningReceipts = returningReceipts;
 exports.returningUsers = returningUsers;
 exports.insertReceipt = insertReceipt;
@@ -100,3 +107,4 @@ exports.returnProjectList = returnProjectList;
 exports.returnAllReceipts = returnAllReceipts;
 exports.updateReceiptStatus = updateReceiptStatus;
 exports.insertProject = insertProject;
+exports.returnCategoriesList = returnCategoriesList;
