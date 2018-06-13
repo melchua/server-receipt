@@ -5,9 +5,11 @@ exports.seed = function(knex, Promise) {
     .then(function () {
       // Inserts seed entries
       return knex('categories').insert([
-        {cat_name: 'Food'},
-        {cat_name: 'Transportation'},
-        {cat_name: 'Entertainment'}
+        {cat_name: 'Car & Truck Expenses'},
+        {cat_name: 'Meals & Entertainment'},
+        {cat_name: 'Office Expenses & Postage'},
+        {cat_name: 'Supplies'},
+        {cat_name: 'Travel'}
       ]);
     });
 };
