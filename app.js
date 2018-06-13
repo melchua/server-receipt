@@ -6,6 +6,9 @@ var logger = require('morgan');
 var config = require('./knexfile.js');
 var env = 'development';
 var knex = require('knex')(config[env]);
+var cors = require('cors')
+
+
 
 var indexRouter = require('./routes/index');
 var receiptsRouter = require('./routes/receipts');
@@ -16,6 +19,11 @@ var projectRouter = require('./routes/projects');
 var categoryRouter = require('./routes/categories');
 
 var app = express();
+app.use(cors({
+  origin: 'http://example.com',
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  credentials: true,
+}))
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
