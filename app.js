@@ -20,7 +20,7 @@ var categoryRouter = require('./routes/categories');
 
 var app = express();
 app.use(cors({
-  origin: 'http://example.com',
+  origin: 'https://www.paperless.stream',
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   credentials: true,
 }))
